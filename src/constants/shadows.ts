@@ -16,8 +16,8 @@ export const SHADOWS = {
   medium: Platform.select({
     ios: {
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.08,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.5,
       shadowRadius: 6,
     },
     android: {

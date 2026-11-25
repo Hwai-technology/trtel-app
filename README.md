@@ -523,3 +523,13 @@ git commit -m "Describe your changes"
 git push
 ```
 
+# تشغيل السيرفر 
+
+تشغيل السيرفر بشكل عادي:
+# npx expo start
+
+
+تشغيل السيرفر مع مسح الكاش (Cache):
+# npx expo start -c
+
+
