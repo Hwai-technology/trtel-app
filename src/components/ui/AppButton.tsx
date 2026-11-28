@@ -1,9 +1,9 @@
 import { Pressable, Text, StyleSheet, ActivityIndicator } from "react-native";
-
+import type { ReactNode } from "react";
 import { THEME } from "../../constants/theme";
 
 // أنواع التصاميم والأحجام
-type ButtonVariant = "primary" | "secondary-white" | "secondary-cream";
+type ButtonVariant = "primary" | "secondary-white" | "secondary-cream" | "danger";
 
 type ButtonSize = "large" | "small";
 
@@ -15,6 +15,8 @@ type AppButtonProps = {
   size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
+  icon?: ReactNode;
+  iconPosition?: "left" | "right"; // ← جديد
 };
 
 export default function AppButton({
@@ -24,12 +26,14 @@ export default function AppButton({
   size = "large",
   disabled = false,
   loading = false,
+  icon,
+  iconPosition = "left",
 }: AppButtonProps) {
-  const isPrimary = variant === "primary";
+  const isFilled = variant === "primary" || variant === "danger";
 
   const textColor = disabled
     ? "#b3bdbb"
-    : isPrimary
+    : isFilled
       ? "#FFFFFF"
       : THEME.colors.textSecondary;
 
@@ -44,17 +48,17 @@ export default function AppButton({
         variant === "secondary-white" && styles.secondaryWhite,
         variant === "secondary-cream" && styles.secondaryCream,
         disabled && styles.disabled,
+        variant === "danger" && styles.danger,
       ]}
     >
       {loading ? (
         <ActivityIndicator color={textColor} />
       ) : (
-        <Text
-          style={[
-            styles.text,
-           { color: textColor }]} >
-          {title}
-        </Text>
+        <>
+          {iconPosition === "left" && icon}
+          <Text style={[styles.text, { color: textColor }]}>{title}</Text>
+          {iconPosition === "right" && icon}
+        </>
       )}
     </Pressable>
   );
@@ -67,6 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+    gap: 8,
   },
 
   // الأحجام
@@ -74,7 +79,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 48,
   },
-
+// وبالـ styles
+danger: {
+  backgroundColor: "#D32F2F",
+},
   small: {
     width: 196,
     height: 38,

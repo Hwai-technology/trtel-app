@@ -1,54 +1,100 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
 import { THEME } from "../../constants/theme";
-import { Bookmark, Copy, Share2, MessageSquare } from "lucide-react-native";
+import {
+  Type, // ← جديد (بدل Bookmark)
+  BookOpen,
+  MessageCircle,
+  Triangle,
+  type LucideIcon,
+} from "lucide-react-native";
 // هي ازا بدنا الايقونات متغيرة
 // export type QuickAction = {
 //   label: string;
 //   icon: ReactNode;
 //   onPress: () => void;
 // };
+export type QuickActionId = "font" | "tafsir" | "bookmark" | "note";
 
-//هي ازا بدنا الايقونات ثابتة من هون
-const QUICK_ACTIONS = [
+type QuickAction = {
+  id: QuickActionId;
+  label: string;
+  icon: LucideIcon;
+  tint: string; // لون خلفية الدايرة
+  color: string; // لون الأيقونة
+  filled?: boolean; // الأيقونة معبّاة
+  flip?: boolean; // قلب الأيقونة (للمثلث)
+};
+
+// الترتيب: أول واحد عاليمين (لأنه row-reverse)
+const QUICK_ACTIONS: QuickAction[] = [
   {
-    label: "حفظ",
-    icon: Bookmark,
-    onPress: () => console.log("حفظ"),
+    id: "font",
+    label: "الخط",
+    icon: Type,
+    tint: "#D9EEE8",
+    color: "#0B7A66",
+    filled: true,
   },
   {
-    label: "نسخ",
-    icon: Copy,
-    onPress: () => console.log("نسخ"),
+    id: "tafsir",
+    label: "التفسير\nوالتدبر",
+    icon: BookOpen,
+    tint: "#F7DDA8",
+    color: "#8A5A24",
   },
   {
-    label: "مشاركة",
-    icon: Share2,
-    onPress: () => console.log("مشاركة"),
+    id: "note",
+    label: "اضافة\nملاحظة",
+    icon: MessageCircle,
+    tint: "#EBE9E4",
+    color: "#8B3A2E",
   },
   {
-    label: "ملاحظة",
-    icon: MessageSquare,
-    onPress: () => console.log("ملاحظة"),
+    id: "bookmark",
+    label: "علامة\nمرجعية",
+    icon: Triangle,
+    tint: "#E4EBE6",
+    color: "#0B7A66",
+    flip: true,
   },
 ];
 
-// type AppQuickActionsProps = {
-//   actions: QuickAction[];
-// };
-export default function AppQuickActions() {
+type AppQuickActionsProps = {
+  onAction: (id: QuickActionId) => void;
+  bookmarked?: boolean; // ← جديد
+};
+
+export default function AppQuickActions({
+  onAction,
+  bookmarked = false, // ← جديد
+}: AppQuickActionsProps) {
   return (
     <View style={styles.container}>
       {QUICK_ACTIONS.map((action) => {
         const Icon = action.icon;
+        const isActiveBookmark = action.id === "bookmark" && bookmarked;
+        const label = isActiveBookmark ? "إزالة\nالعلامة" : action.label;
+        const filled = action.filled || isActiveBookmark;
 
         return (
           <Pressable
-            key={action.label}
+            key={action.id}
             style={styles.action}
-            onPress={action.onPress}
+            onPress={() => onAction(action.id)}
           >
-            <Icon size={20} color={THEME.colors.primary} />
+            <View style={[styles.iconCircle, { backgroundColor: action.tint }]}>
+              <Icon
+                size={20}
+                color={action.color}
+                fill={action.filled ? action.color : "none"}
+                style={
+                  action.flip
+                    ? { transform: [{ rotate: "180deg" }] }
+                    : undefined
+                }
+              />
+            </View>
 
             <Text style={styles.label}>{action.label}</Text>
           </Pressable>
@@ -64,15 +110,18 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     alignSelf: "center",
     flexDirection: "row-reverse",
-    justifyContent: "space-around",
-    alignItems: "center",
+    gap: 12,
   },
 
   action: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
+    gap: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 4,
+    borderRadius: 14,
+    backgroundColor: "#FBF7EA",
   },
 
   label: {
@@ -80,5 +129,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: THEME.colors.textSecondary,
     textAlign: "center",
+  },
+
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

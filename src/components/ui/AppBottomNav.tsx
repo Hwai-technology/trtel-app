@@ -10,8 +10,8 @@ import {
 } from "lucide-react-native";
 
 import { THEME } from "../../constants/theme";
-
-type NavTab = "home" | "quran" | "azkar" | "circles" | "more";
+export type NavTab = "home" | "quran" | "azkar" | "circles" | "more";
+// type NavTab = "home" | "quran" | "azkar" | "circles" | "more";
 
 type AppBottomNavProps = {
   activeTab: NavTab;

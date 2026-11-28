@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from "react-native";
-import { THEME } from "../constants/theme";
+import { THEME } from "../../constants/theme";
 
 export default function QuranScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>شاشة المزيد </Text>
+      <Text style={styles.title}>شاشة الحلقات </Text>
     </View>
   );
 }

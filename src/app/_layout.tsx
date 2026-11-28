@@ -1,19 +1,21 @@
 import { useEffect } from "react";
-import { Tabs, router } from "expo-router";
+import { Stack } from "expo-router";
+import { SavedVersesProvider } from "@/context/SavedVersesContext";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { I18nManager, View } from "react-native";
-import AppBottomNav from "../components/ui/AppBottomNav";
+import { NotesProvider } from "@/context/NotesContext";
 import { THEME } from "@/constants/theme";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import AppProviders from "@/components/AppProviders";
+import { BookmarksProvider } from "@/context/BookmarksContext";
 
 void SplashScreen.preventAutoHideAsync();
 
-I18nManager.allowRTL(true);
-I18nManager.forceRTL(true);
+// مؤقتاً: false = بيفتح على اللوغ إن، true = بيفتح على التابات
+// لاحقاً منبدلها بحالة تسجيل الدخول الحقيقية
+const isLoggedIn = true;
+
 export default function RootLayout() {
-  const insets = useSafeAreaInsets();
   const [loaded, error] = useFonts({
     "Tajawal-Regular": require("../assets/fonts/Tajawal-Regular.ttf"),
     "Tajawal-Medium": require("../assets/fonts/Tajawal-Medium.ttf"),
@@ -22,10 +24,10 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded || error) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, error]);
 
   if (error) {
     throw error;
@@ -34,63 +36,27 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
   return (
-    <>
+    <AppProviders>
       <StatusBar style="auto" />
 
-      <Tabs
+      <Stack
         screenOptions={{
           headerShown: false,
-          // tabBarStyle: {
-          //   position: "absolute",
-          //   backgroundColor: "transparent",
-          //   borderTopWidth: 0,
-          //   elevation: 0,
-          //   shadowColor: "transparent",
-          //   shadowOpacity: 0,
-          //   shadowRadius: 0,
-          //   height: 64,
-          // },
-          sceneStyle: {
+          contentStyle: {
             backgroundColor: THEME.colors.background,
           },
         }}
-        tabBar={({ state }) => {
-          const currentRoute = state.routes[state.index].name;
-
-          const activeTab = currentRoute === "index" ? "home" : currentRoute;
-
-          return (
-            <View
-              pointerEvents="box-none"
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                paddingHorizontal: THEME.spacing.xxl,
-                backgroundColor: "transparent",
-              }}
-            >
-              <AppBottomNav
-                activeTab={
-                  activeTab as "home" | "quran" | "azkar" | "circles" | "more"
-                }
-                onTabPress={(tab) =>
-                  router.navigate(tab === "home" ? "/" : `/${tab}`)
-                }
-              />
-            </View>
-          );
-        }}
       >
-        <Tabs.Screen name="index" />
-        <Tabs.Screen name="quran" />
-        <Tabs.Screen name="azkar" />
-        <Tabs.Screen name="circles" />
-        <Tabs.Screen name="more" />
-      </Tabs>
-    </>
+        <Stack.Protected guard={isLoggedIn}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="notes" />
+        </Stack.Protected>
+
+        <Stack.Protected guard={!isLoggedIn}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
+      </Stack>
+    </AppProviders>
   );
 }

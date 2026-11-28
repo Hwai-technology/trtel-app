@@ -6,19 +6,30 @@ import { ArrowRight } from "lucide-react-native";
 import { THEME } from "../../constants/theme";
 
 type AppBarProps = {
-  title: string;
+  title?: string;
+   subtitle?: string; 
   onBack: () => void;
   logo?: ReactNode;
+  badge?: string;
 };
 
-export default function AppBar({ title, onBack, logo }: AppBarProps) {
+export default function AppBar({ title, subtitle, onBack, logo, badge }: AppBarProps) {
   return (
     <View style={styles.container}>
       <Pressable onPress={onBack} style={styles.backButton}>
         <ArrowRight size={22} color={THEME.colors.text} />
       </Pressable>
-
-      <Text style={styles.title}>{title}</Text>
+  {title ? (
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>{title}</Text>
+          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        </View>
+      ) : null}
+      {badge ? (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{badge}</Text>
+        </View>
+      ) : null}
 
       <View style={styles.spacer} />
 
@@ -46,6 +57,19 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
+  badge: {
+    marginRight: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: "#ECE9DF",
+  },
+
+  badgeText: {
+    fontFamily: THEME.typography.fontFamily.regular,
+    fontSize: 11,
+    color: THEME.colors.textSecondary,
+  },
 
   backButton: {
     width: 40,
@@ -62,6 +86,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: THEME.colors.text,
     marginRight: THEME.spacing.lg,
+  },
+subtitle: {
+    fontFamily: THEME.typography.fontFamily.regular,
+    fontSize: 11,
+    color: THEME.colors.textSecondary,
+    textAlign: "right",
+  },
+   // العنوان والسطر الفرعي فوق بعض
+  titleBlock: {
+    marginRight: THEME.spacing.lg,
+    alignItems: "flex-end",
   },
 
   spacer: {
